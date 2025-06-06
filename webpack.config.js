@@ -4,7 +4,7 @@ module.exports = {
 	entry: './src/client/index.js',  // <-- adjust if different
 	output: {
 		filename: 'bundle.js',
-		path: path.resolve(__dirname, 'dist') // <-- output path for Docker
+		path: path.resolve(__dirname, 'build') // <-- output path for Docker
 	},
 	module: {
 		rules: [
