@@ -38,7 +38,8 @@ jobs:
         docker push 058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:$IMAGE_TAG
 
     - name: Update Dockerrun.aws.json with Correct Image Tag
-      run: sed -i "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json
+      #run: sed -i "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json
+      run: sed "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json.template > Dockerrun.aws.json
 
     - name: Upload Dockerrun.aws.json to S3
       run: |
