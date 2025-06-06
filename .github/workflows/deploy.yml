@@ -3,7 +3,7 @@ name: Deploy React App to Elastic Beanstalk
 on:
   push:
     branches:
-      - main_1  # Deploy only when code is pushed to the `main` branch
+      - main  # Deploy only when code is pushed to the `main` branch
 
 
 jobs:
@@ -15,39 +15,42 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: 
-        aws-secret-access-key: 
-        aws-region: us-east-1  # Change this to your AWS region
+        aws-access-key-id: AKIAQ3EGQIQ5JBXDLSHQ
+        aws-secret-access-key: +dMPKpf1SHEHJVqrBVPHNmdQM3XKpt043fSpwBeI
+        aws-region: ap-south-1
 
     - name: Login to AWS ECR
       id: login-ecr
       run: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 686255968621.dkr.ecr.us-east-1.amazonaws.com
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 058264142906.dkr.ecr.ap-south-1.amazonaws.com
     - name: Generate Image Tag (Date and Time)
       id: generate-tag
       run: echo "IMAGE_TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
     - name: Build & Push Docker Image to ECR
       env:
-        ECR_REPOSITORY: vetsave-stage  # Change this to your ECR repo name
-        AWS_ACCOUNT_ID: 686255968621.dkr.ecr.us-east-1.amazonaws.com
-        AWS_REGION: us-east-1
+        ECR_REPOSITORY: application-sample  # Change this to your ECR repo name
+        AWS_ACCOUNT_ID: 058264142906.dkr.ecr.ap-south-1.amazonaws.com
+        AWS_REGION: ap-south-1
       run: |
-        docker build -t 686255968621.dkr.ecr.us-east-1.amazonaws.com/vetsave-stage:$IMAGE_TAG .
-        docker push 686255968621.dkr.ecr.us-east-1.amazonaws.com/vetsave-stage:$IMAGE_TAG
+        docker build -t 058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:$IMAGE_TAG .
+        docker push 058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:$IMAGE_TAG
+
+    - name: Update Dockerrun.aws.json with Correct Image Tag
+      run: sed -i "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json
 
     - name: Upload Dockerrun.aws.json to S3
       run: |
-        aws s3 cp Dockerrun.aws.json s3://elasticbeanstalk-us-east-1-686255968621/Dockerrun.aws.json 
+        aws s3 cp Dockerrun.aws.json s3://elasticbeanstalk-ap-south-1-058264142906/Dockerrun.aws.json 
 
     - name: Create New Application Version in Elastic Beanstalk
       run: |
-        aws elasticbeanstalk create-application-version --application-name Frontend_Vetsave_cicd \
-        --version-label $IMAGE_TAG --source-bundle S3Bucket="elasticbeanstalk-us-east-1-686255968621",S3Key="Dockerrun.aws.json"
+        aws elasticbeanstalk create-application-version --application-name sample-app \
+        --version-label $IMAGE_TAG --source-bundle S3Bucket="elasticbeanstalk-ap-south-1-058264142906",S3Key="Dockerrun.aws.json"
 
     - name: Deploy to Elastic Beanstalk
       run: |
-        aws elasticbeanstalk update-environment --environment-name FrontendVetsavecicd-env \
+        aws elasticbeanstalk update-environment --environment-name Sample-app-env \
         --version-label $IMAGE_TAG
