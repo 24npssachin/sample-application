@@ -5,6 +5,7 @@ on:
     branches:
       - main  # Deploy only when code is pushed to the `main` branch
 
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
