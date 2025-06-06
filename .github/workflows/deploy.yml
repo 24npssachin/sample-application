@@ -24,27 +24,26 @@ jobs:
       id: login-ecr
       run: |
         aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 058264142906.dkr.ecr.ap-south-1.amazonaws.com
-
     - name: Generate Image Tag (Date and Time)
       id: generate-tag
       run: echo "IMAGE_TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
 
     - name: Build & Push Docker Image to ECR
       env:
-        ECR_REPOSITORY: application-sample
+        ECR_REPOSITORY: application-sample  # Change this to your ECR repo name
         AWS_ACCOUNT_ID: 058264142906.dkr.ecr.ap-south-1.amazonaws.com
         AWS_REGION: ap-south-1
       run: |
         docker build -t 058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:$IMAGE_TAG .
         docker push 058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:$IMAGE_TAG
 
-    - name: Generate Dockerrun.aws.json from Template
-      run: |
-        sed "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json.template > Dockerrun.aws.json
+    - name: Update Dockerrun.aws.json with Correct Image Tag
+      run: sed -i "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json
+      #run: sed "s|<IMAGE_TAG>|$IMAGE_TAG|g" Dockerrun.aws.json.template > Dockerrun.aws.json
 
     - name: Upload Dockerrun.aws.json to S3
       run: |
-        aws s3 cp Dockerrun.aws.json s3://elasticbeanstalk-ap-south-1-058264142906/Dockerrun.aws.json
+        aws s3 cp Dockerrun.aws.json s3://elasticbeanstalk-ap-south-1-058264142906/Dockerrun.aws.json 
 
     - name: Create New Application Version in Elastic Beanstalk
       run: |
