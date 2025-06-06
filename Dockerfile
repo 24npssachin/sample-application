@@ -16,6 +16,9 @@ COPY . .
 # Install missing Babel plugin inside the container (if needed)
 RUN npm install @babel/plugin-proposal-private-property-in-object --save-dev
 
+# Fix OpenSSL error in Node 17+
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 # Build the React.js app for production
 RUN npm run build
 
