@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "686255968621.dkr.ecr.us-east-1.amazonaws.com/vetsave-stage:latest",
+    "Name": "058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:latest",
     "Update": "true"
   },
   "Ports": [
