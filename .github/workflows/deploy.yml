@@ -23,7 +23,7 @@ jobs:
     - name: Login to AWS ECR
       id: login-ecr
       run: |
-        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 058264142906.dkr.ecr.ap-south-1.amazonaws.com
+        aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 058264142906.dkr.ecr.ap-south-1.amazonaws.com
     - name: Generate Image Tag (Date and Time)
       id: generate-tag
       run: echo "IMAGE_TAG=$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
