@@ -1,0 +1,88 @@
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - master-1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build the application
+      run: npm run build
+
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v2
+
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-docker-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+
+    - name: Build Docker Image
+      run: |
+        docker build -t react-app .
+
+    - name: Set up AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1  # Corrected key to aws-region
+
+    - name: Log in to Amazon ECR
+      run: |
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 211125436022.dkr.ecr.us-east-1.amazonaws.com
+
+    - name: Tag Docker image & Push to ECR
+      run: |
+        docker tag react-app:latest 211125436022.dkr.ecr.us-east-1.amazonaws.com/test:latest
+        docker push 211125436022.dkr.ecr.us-east-1.amazonaws.com/test:latest
+
+    # Create Dockerrun.aws.json file
+    - name: Create Dockerrun.aws.json file
+      run: |
+        echo '{
+          "AWSEBDockerrunVersion": "2",
+          "Image": {
+            "Name": "211125436022.dkr.ecr.us-east-1.amazonaws.com/test:latest",
+            "Update": "true"
+          },
+          "Ports": [
+            {
+              "ContainerPort": "80"
+            }
+          ]
+        }' > Dockerrun.aws.json
+
+    # Install Elastic Beanstalk CLI
+    - name: Install Elastic Beanstalk CLI
+      run: |
+        pip install awsebcli
+
+    # Deploy to Elastic Beanstalk
+    - name: Deploy to Elastic Beanstalk
+      run: |
+        eb init -p docker my-app --region us-east-1
+        eb deploy
+      
+    
+ #   - name: Deploy the application (optional)
+  #    run: |
+ #       echo "Deploying to production..."
