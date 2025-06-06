@@ -13,7 +13,7 @@ COPY . .
 ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Build the React app
-RUN npm run build && ls -la /app/build
+#RUN npm run build && ls -la /app/build
 
 # Stage 2: Serve with Nginx
 FROM nginx:alpine
