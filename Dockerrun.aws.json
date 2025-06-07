@@ -1,16 +1,12 @@
 {
-  "AWSEBDockerrunVersion": 1,
-  "containerDefinitions": [
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "058264142906.dkr.ecr.ap-south-1.amazonaws.com/application-sample:<IMAGE_TAG>",
+    "Update": "true"
+  },
+  "Ports": [
     {
-      "name": "application-sample",
-      "image": "058264142906.dkr.ecr.ap-south-1.amazonaws.com:<IMAGE_TAG>",
-      "memory": 512,
-      "essential": true,
-      "portMappings": [
-        {
-          "containerPort": 3000
-        }
-      ]
+      "ContainerPort": "80"
     }
   ]
 }
