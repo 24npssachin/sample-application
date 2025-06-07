@@ -1,9 +1,9 @@
 {
   "name": "example-app",
   "scripts": {
-  "build": "webpack",
-  "start": "node src/server/app.js"
-}
+    "build": "node --openssl-legacy-provider ./node_modules/.bin/webpack --mode Production --entry ./src/client/index.js --output ./static/bundle.js",
+    "start": "node src/server/app.js"
+  },
   "dependencies": {
     "express": "^4.17.1"
   },
@@ -12,7 +12,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "sucrase": "^3.15.0",
-    "webpack": "^4.43.0",
+    "webpack": "^4.43.0",More actions
     "webpack-cli": "^3.3.12"
   }
 }
