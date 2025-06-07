@@ -3,7 +3,7 @@ name: Deploy React App to Elastic Beanstalk
 on:
   push:
     branches:
-      - main  # Deploy only when code is pushed to the `main` branch
+      - main-offline  # Deploy only when code is pushed to the `main` branch
 
 jobs:
   deploy:
